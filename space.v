@@ -18,7 +18,7 @@ module space
 	(.clk(clk), .reset(reset_n), .h_sync(hsync), .v_sync(vsync), .video_on(video_on), .p_tick(pixel_tick), .pixel_x(pixel_x), .pixel_y(pixel_y));
 
 	wall wallins
-	(.video_on(video_on), .pix_x(pixel_x), .pix_y(pixel_y), .rgb(rgb_next));
+	(.video_on(video_on), .pix_x(pixel_x), .pix_y(pixel_y), .rgb(rgb_next), .ledleft(led2), .ledright(led1), .reset(reset_n), .clk(clk), .fire(led2));
  
  	//test t
  	//(.video_on(video_on), .pix_x(pixel_x), .pix_y(pixel_y), .rgb(rgb_next));

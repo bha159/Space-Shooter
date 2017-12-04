@@ -1,7 +1,10 @@
 module wall
   (
     input wire video_on,
+    input wire reset,
+    input clk,
     input wire [10:0] pix_x, pix_y,
+    input wire ledleft, ledright, fire,
     output reg [2:0] rgb
     );
     //Screen constraints
@@ -20,25 +23,60 @@ module wall
     localparam BWALL_L = 477;
     localparam BWALL_R = 479;
     //Ball constraints
-    localparam BALL_L = 315;
-    localparam BALL_R = 325;
     localparam BALL_T = 465;
     localparam BALL_B = 477;
+    localparam BALL_SIZE = 10;
+    localparam BALL_V = 2;
     //Bullet constraints
-    localparam BULL_T = BALL_T - 1;//469 when on default
-    localparam BULL_B = BALL_T - 5;//465 when on default
-    localparam BULL_L = BALL_L + 3;//318 when on default
-    localparam BULL_R = BALL_R - 3;//322 when on default
+    localparam BULL_T = BALL_T - 1;
+    localparam BULL_B = BALL_T - 5;
+    localparam BULL_SIZE = 4;
 
     wire lwall, rwall, twall, bwall, ball, bull;
     wire [2:0] lrgb, rrgb, trgb, brgb, ballrgb, bullrgb;
+    //Player animation
+    wire frame_tick;
+    wire [10:0] ball_x_l, ball_x_r; 
+    reg [10:0] ball_x_reg, ball_x_next;
+    //Bullet animation
+    wire [10:0] bull_x_l, bull_x_r;
 
     assign lwall = (LWALL_L<=pix_x) && (pix_x<=LWALL_R);
     assign rwall = (RWALL_L<=pix_x) && (pix_x<=RWALL_R);
     assign twall = (TWALL_L<=pix_y) && (pix_y<=TWALL_R);
     assign bwall = (BWALL_L<=pix_y) && (pix_y<=BWALL_R);
-    assign ball = (BALL_L<=pix_x) && (pix_x<=BALL_R) && (BALL_T<=pix_y) && (pix_y<=BALL_B);
-    assign bull = (BULL_L<=pix_x) && (pix_x<=BULL_R) && (BULL_B<=pix_y) && (pix_y<=BULL_T);
+    //Player animation
+    assign frame_tick = (pix_y==11'd481) && (pix_x==11'd0);
+    assign ball_x_l = ball_x_reg;
+    assign ball_x_r = ball_x_l + BALL_SIZE - 1;  
+    assign  ball = (BALL_T<=pix_y) && (pix_y<=BALL_B) && (ball_x_l<=pix_x) && (pix_x<=ball_x_r);
+    //Bullet animation
+    assign bull_x_l = ball_x_reg + 3;
+    assign bull_x_r = bull_x_l + BULL_SIZE - 1;
+    assign bull = (BULL_B<=pix_y) && (pix_y<=pix_y) && (bull_x_l<=pix_x) && (pix_x<=bull_x_r);
+
+
+    always @(*)
+    begin
+    	if (frame_tick)
+    		if( (~ledright) && (ball_x_r < MAX_X - BALL_SIZE - 1) )
+    			ball_x_next = ball_x_reg + BALL_V;
+    		else if( (~ledleft) && (ball_x_l > BALL_V) )
+    			ball_x_next = ball_x_reg - BALL_V;
+    		else
+    			ball_x_next = ball_x_reg;
+    	else
+    		ball_x_next = ball_x_reg;
+    end
+
+    always @(posedge clk)
+    	if(reset)
+    		ball_x_reg <= 315;
+    	else if(frame_tick)
+    	begin
+    		ball_x_reg <= ball_x_next;
+    	end
+
 
     assign ballrgb = 3'b110;
     assign bullrgb = 3'b100;
@@ -60,7 +98,7 @@ module wall
     			rgb = brgb;
     	else if(ball)
     			rgb = ballrgb;
-    	else if(bull)
+    	else if(bull && ~fire)
     			rgb = bullrgb;
     		 else
     		 	rgb = 3'b000;
