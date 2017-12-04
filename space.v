@@ -13,7 +13,11 @@ module space
 	reg [2:0] rgb_reg; 
 	wire [2:0] rgb_next;
 	wire reset_n;
-	//Instantiation  
+	wire reset_soft;
+	//Instantiation
+	reset_gen rese 
+	(.clk(clk), .reset_soft(reset_soft));  
+	
 	sync vga
 	(.clk(clk), .reset(reset_n), .h_sync(hsync), .v_sync(vsync), .video_on(video_on), .p_tick(pixel_tick), .pixel_x(pixel_x), .pixel_y(pixel_y));
 
@@ -38,5 +42,5 @@ module space
 			rgb_reg<=rgb_next; 
 	//Output  
 	assign  rgb = rgb_reg;
-	assign  reset_n = ~reset;
+	assign  reset_n = ~reset | reset_soft;
 endmodule 
