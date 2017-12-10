@@ -5,7 +5,8 @@ module wall
     input clk,
     input wire [10:0] pix_x, pix_y,
     input wire ledleft, ledright, fire,
-    output reg [2:0] rgb
+    output reg [2:0] rgb,
+    output wire wall_on
     );
     //Screen constraints
     localparam MAX_X = 640;
@@ -54,7 +55,7 @@ module wall
     assign bull_x_l = ball_x_reg + 3;
     assign bull_x_r = bull_x_l + BULL_SIZE - 1;
     assign bull = (BULL_B<=pix_y) && (pix_y<=pix_y) && (bull_x_l<=pix_x) && (pix_x<=bull_x_r);
-
+    assign wall_on = lwall | rwall | twall | bwall | ball | bull; //Control signal of wall module
 
     always @(*)
     begin
