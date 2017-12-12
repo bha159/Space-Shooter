@@ -73,7 +73,7 @@ module wall
     always @(*)
     begin
     	if (frame_tick)
-    		if( (~ledright) && (ball_x_r < MAX_X - BALL_SIZE - 1) )
+    		if( (~ledright) && (ball_x_r < MAX_X - BALL_SIZE) )
     			ball_x_next = ball_x_reg + BALL_V;
     		else if( (~ledleft) && (ball_x_l > BALL_V) )
     			ball_x_next = ball_x_reg - BALL_V;

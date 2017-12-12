@@ -1,5 +1,5 @@
 module obs
-#(parameter N1=15)
+#(parameter N1=15, parameter LOWER_LIMIT = 474)
 (
 	input wire video_on,
     input wire reset,
@@ -9,7 +9,8 @@ module obs
     output reg [2:0] rgb,
     output wire obs_on,
     input wire [10:0] bull_x, bull_y,
-    output wire obs_state
+    output wire obs_state,
+    output wire crossed
 );
 
 	//Screen constraints
@@ -31,7 +32,6 @@ module obs
     wire [10:0] y1n, y2n;
     reg [3:0] count, count_next;
     assign frame_tick = (pix_y==11'd481) && (pix_x==11'd0);
-
     assign y1n = y1 + obs_y_reg[N-1:N-11]; //*
     assign y2n = y2 + obs_y_reg[N-1:N-11]; //*
 
@@ -87,4 +87,5 @@ module obs
     		 	rgb = 3'b000;
 
     assign obs_state = ps;
+    assign crossed = (y2n >= LOWER_LIMIT); //**
 endmodule
