@@ -1,4 +1,5 @@
 module obs
+#(parameter N1=15)
 (
 	input wire video_on,
     input wire reset,
@@ -7,7 +8,9 @@ module obs
     input wire [10:0] x1, x2, y1, y2,
     output reg [2:0] rgb,
     output wire obs_on,
-    input wire [10:0] bull_x, bull_y);
+    input wire [10:0] bull_x, bull_y,
+    output wire obs_state
+);
 
 	//Screen constraints
     localparam MAX_X = 640;
@@ -15,10 +18,9 @@ module obs
     localparam OBS_V = 1;
     localparam START = 0;
     localparam on = 1'b1, off = 1'b0;
-    localparam N = 15;  //increasing this will slowdown the speed of paddle
+    localparam N = N1;  //increasing this will slowdown the speed of paddle
                         //with increment of 1 the speed will be halved,
-                        //minimum = 11 (should not be less than 11, or bad thing
-                        // will happen)
+                        //minimum = 11 (should not be less than 11, or bad thing will happen)
 
     wire obs;
     wire [2:0] obsrgb;
@@ -37,21 +39,7 @@ module obs
     assign obsrgb = 3'b111;
     assign col = (x1<bull_x) && (bull_x<x2) && (y1n<bull_y) && (bull_y<y2n);
     assign obs_on = obs & ps;
-    //Slowing down
-    /*always @(posedge clk)
-    begin
-        count <= count_next;
-    end
 
-    always @(*)
-    begin
-        if (frame_tick)
-        begin
-           count_next = count + 1;
-        end
-        else
-            count_next = count;
-    end*/
     //Animation Obstacle
     always @(posedge clk)
     begin
@@ -98,4 +86,5 @@ module obs
     		 else
     		 	rgb = 3'b000;
 
+    assign obs_state = ps;
 endmodule
