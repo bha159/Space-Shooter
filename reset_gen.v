@@ -3,13 +3,15 @@ module reset_gen
 	input wire clk,
 	output reg reset_soft);
 	
-	reg [50:0] count, count_reg;
+	reg [50:0] count;
+	wire [50:0] count_next;
 
 	always @(posedge clk)
 	begin
-		count = count_reg;
-		count_reg = count + 1;
+		count <= count_next;
 	end
+
+	assign count_next = count + 1;
 
 	always @(*)
 		case(count)
