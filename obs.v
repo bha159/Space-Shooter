@@ -1,5 +1,5 @@
 module obs
-#(parameter N1=15, parameter LOWER_LIMIT = 474)
+#(parameter N1=15, parameter LOWER_LIMIT = 475)
 (
 	input wire video_on,
     input wire reset,
@@ -18,7 +18,8 @@ module obs
     localparam MAX_Y = 480;
     localparam OBS_V = 1;
     localparam START = 0;
-    localparam on = 1'b1, off = 1'b0;
+    localparam on = 1'b1, off = 1'b0;  //don't change these as the values them selves are important
+
     localparam N = N1;  //increasing this will slowdown the speed of paddle
                         //with increment of 1 the speed will be halved,
                         //minimum = 11 (should not be less than 11, or bad thing will happen)
@@ -51,7 +52,7 @@ module obs
 
     always @(*)
     begin
-        if (frame_tick)
+        if (frame_tick & (ps == on))  // ** if (frame_tick & state off then no incrementing)
         begin
             obs_y_next = obs_y_reg + OBS_V;
         end
